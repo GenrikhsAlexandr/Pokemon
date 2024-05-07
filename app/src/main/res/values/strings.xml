@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Pokemon</string>
+    <string name="next">Следующий</string>
+    <string name="previous">Предыдущий</string>
+    <string name="error_message">Произошла ошибка, проверьте подключение к интернету</string>
+    <string name="error_message_response">Что-то пошло не так</string>
+</resources>
