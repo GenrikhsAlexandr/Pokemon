@@ -1,12 +1,18 @@
 package com.aleksandrgenrikhs.pokemon.presentation
 
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.aleksandrgenrikhs.pokemon.data.RepositoryImpl
+import com.aleksandrgenrikhs.pokemon.data.RepositoryImpl.Companion.IMAGE_URL
 import com.aleksandrgenrikhs.pokemon.databinding.PokemonItemBinding
 import com.aleksandrgenrikhs.pokemon.domain.Pokemon
+import com.squareup.picasso.Picasso
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private val diffCallBack = object : DiffUtil.ItemCallback<Pokemon>() {
 
@@ -30,10 +36,12 @@ class PokemonAdapter(
         fun bind(listItem: Pokemon) {
             with(binding) {
                 pokemonTitle.text = listItem.name
-                pokemonIcon.setImageBitmap(listItem.image)
                 binding.root.setOnClickListener {
                     onClick(listItem.id)
                 }
+                Picasso.get()
+                    .load("$IMAGE_URL${listItem.id}.png")
+                    .into(pokemonIcon)
             }
         }
     }

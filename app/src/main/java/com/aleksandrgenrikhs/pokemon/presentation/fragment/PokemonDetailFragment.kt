@@ -1,4 +1,4 @@
-package com.aleksandrgenrikhs.pokemon.presentation
+package com.aleksandrgenrikhs.pokemon.presentation.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater

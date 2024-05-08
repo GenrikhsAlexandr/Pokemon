@@ -4,13 +4,11 @@ import android.app.Application
 import com.aleksandrgenrikhs.pokemon.R
 import com.aleksandrgenrikhs.pokemon.ResultState
 import com.aleksandrgenrikhs.pokemon.domain.NetworkConnectionChecker
-import com.aleksandrgenrikhs.pokemon.domain.Offset
-import com.aleksandrgenrikhs.pokemon.domain.Pokemon
+import com.aleksandrgenrikhs.pokemon.domain.Page
 import com.aleksandrgenrikhs.pokemon.domain.PokemonDetail
 import com.aleksandrgenrikhs.pokemon.domain.Repository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -26,12 +24,10 @@ class RepositoryImpl
     private val application: Application
 ) : Repository {
 
-    private lateinit var response: PokemonListDto
-
     companion object {
         const val LIMIT = 20
         private const val BASE_URL = "https://pokeapi.co/api/v2/"
-        private const val IMAGE_URL =
+        const val IMAGE_URL =
             "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
         private val json = Json { ignoreUnknownKeys = true }
     }
@@ -55,13 +51,13 @@ class RepositoryImpl
 
     private val service: ApiService = retrofit.create(ApiService::class.java)
 
-    override suspend fun getPokemon(offset: Int?): ResultState<List<Pokemon>?> {
+    override suspend fun getPokemon(offset: Int?): ResultState<Page?> {
         return withContext(Dispatchers.IO) {
             if (!networkConnected.isNetworkConnected(application)) {
                 return@withContext ResultState.Error(R.string.error_message)
             } else {
                 try {
-                    response = service.getPokemon(offset = offset, limit = LIMIT)
+                    val response = service.getPokemon(offset = offset, limit = LIMIT)
                     val pokemonList = mapper.mapToPokemon(response)
                     return@withContext ResultState.Success(pokemonList)
                 } catch (e: Exception) {
@@ -72,7 +68,7 @@ class RepositoryImpl
         }
     }
 
-    override suspend fun getOffset(): Offset = mapper.mapOffsetToUrl(response)
+    //  override suspend fun getOffset(): Offset = mapper.mapOffsetToUrl(response)
 
     override suspend fun getDetailPokemon(urlDetail: String): ResultState<PokemonDetail> {
         TODO("Not yet implemented")

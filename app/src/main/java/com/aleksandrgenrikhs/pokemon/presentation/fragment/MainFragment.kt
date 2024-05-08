@@ -1,12 +1,12 @@
-package com.aleksandrgenrikhs.pokemon.presentation
+package com.aleksandrgenrikhs.pokemon.presentation.fragment
 
 import android.content.Context
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aleksandrgenrikhs.pokemon.R
 import com.aleksandrgenrikhs.pokemon.app
 import com.aleksandrgenrikhs.pokemon.databinding.FragmentMainBinding
+import com.aleksandrgenrikhs.pokemon.presentation.BottomOffsetDecoration
+import com.aleksandrgenrikhs.pokemon.presentation.viewmodel.MainViewModel
+import com.aleksandrgenrikhs.pokemon.presentation.PokemonAdapter
 import com.aleksandrgenrikhs.pokemon.viewModelFactory
 import kotlinx.coroutines.launch
 
@@ -36,15 +39,14 @@ class MainFragment : Fragment() {
     private val binding: FragmentMainBinding get() = _binding!!
 
     private val adapter: PokemonAdapter by lazy {
-        PokemonAdapter(
-            onClick = { pokemon ->
-                onItemClick(pokemon)
-            })
+        PokemonAdapter(onClick = { pokemon -> onItemClick(pokemon) })
     }
 
     private fun onItemClick(pokemon: Int) {
         navController.navigate(
-            MainFragmentDirections.actionMainFragmentToDetailFragment(pokemon)
+            MainFragmentDirections.actionMainFragmentToDetailFragment(
+                pokemon
+            )
         )
     }
 
@@ -108,7 +110,9 @@ class MainFragment : Fragment() {
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.pokemon.collect { pokemon ->
-                adapter.submitList(pokemon)
+                if (pokemon != null) {
+                    adapter.submitList(pokemon.pokemon)
+                }
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
@@ -116,11 +120,16 @@ class MainFragment : Fragment() {
                 Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
             }
         }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isProgressBarVisible.collect { isVisible ->
+                binding.progressBar.isVisible = isVisible
+            }
+        }
     }
 
     private fun clickButton() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.offset.collect { offset ->
+            viewModel.pokemon.collect { offset ->
                 nextPage = offset?.next
                 previousPage = offset?.previous
                 binding.nextButton.setOnClickListener {

@@ -1,7 +1,7 @@
 package com.aleksandrgenrikhs.pokemon.di.viewModel
 
 import androidx.lifecycle.ViewModel
-import com.aleksandrgenrikhs.pokemon.presentation.MainViewModel
+import com.aleksandrgenrikhs.pokemon.presentation.viewmodel.MainViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap

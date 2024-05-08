@@ -8,7 +8,5 @@ class PokemonInteractor
 ) {
     suspend fun getPokemon(offset:Int?) = repository.getPokemon(offset)
 
-    suspend fun getOffset() = repository.getOffset()
-
     suspend fun getDetailPokemon(url:String) = repository.getDetailPokemon(url)
 }

@@ -2,7 +2,7 @@ package com.aleksandrgenrikhs.pokemon.di
 
 import android.app.Application
 import com.aleksandrgenrikhs.pokemon.di.viewModel.ViewModelFactory
-import com.aleksandrgenrikhs.pokemon.presentation.MainFragment
+import com.aleksandrgenrikhs.pokemon.presentation.fragment.MainFragment
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton

@@ -1,10 +1,9 @@
-package com.aleksandrgenrikhs.pokemon.presentation
+package com.aleksandrgenrikhs.pokemon.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.pokemon.ResultState
-import com.aleksandrgenrikhs.pokemon.domain.Offset
-import com.aleksandrgenrikhs.pokemon.domain.Pokemon
+import com.aleksandrgenrikhs.pokemon.domain.Page
 import com.aleksandrgenrikhs.pokemon.domain.PokemonInteractor
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,10 +18,10 @@ class MainViewModel
     val interator: PokemonInteractor,
 ) : ViewModel() {
 
-    private val _pokemon: MutableStateFlow<List<Pokemon>?> = MutableStateFlow(emptyList())
-    val pokemon: StateFlow<List<Pokemon>?> = _pokemon
+    private val _pokemon: MutableStateFlow<Page?> = MutableStateFlow(null)
+    val pokemon: StateFlow<Page?> = _pokemon
 
-    val offset: MutableStateFlow<Offset?> = MutableStateFlow(null)
+    val isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     val toastMessageError: MutableSharedFlow<ResultState.Error> = MutableSharedFlow(
         extraBufferCapacity = 1,
@@ -35,6 +34,7 @@ class MainViewModel
 
     fun getPokemon(page: Int?) {
         viewModelScope.launch {
+            isProgressBarVisible.value = true
             when (val pokemon = interator.getPokemon(page)) {
                 is ResultState.Error -> {
                     toastMessageError.tryEmit(ResultState.Error(pokemon.message))
@@ -42,9 +42,9 @@ class MainViewModel
 
                 is ResultState.Success -> {
                     _pokemon.value = pokemon.data
-                    offset.value = interator.getOffset()
                 }
             }
+            isProgressBarVisible.value = false
         }
     }
 }
