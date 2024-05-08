@@ -1,18 +1,15 @@
 package com.aleksandrgenrikhs.pokemon.presentation
 
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.aleksandrgenrikhs.pokemon.data.RepositoryImpl
-import com.aleksandrgenrikhs.pokemon.data.RepositoryImpl.Companion.IMAGE_URL
+import com.aleksandrgenrikhs.pokemon.R
+import com.aleksandrgenrikhs.pokemon.data.RepositoryImpl.Companion.MAIN_IMAGE_URL
 import com.aleksandrgenrikhs.pokemon.databinding.PokemonItemBinding
 import com.aleksandrgenrikhs.pokemon.domain.Pokemon
-import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.bumptech.glide.Glide
 
 private val diffCallBack = object : DiffUtil.ItemCallback<Pokemon>() {
 
@@ -39,11 +36,12 @@ class PokemonAdapter(
                 binding.root.setOnClickListener {
                     onClick(listItem.id)
                 }
-                Picasso.get()
-                    .load("$IMAGE_URL${listItem.id}.png")
+                Glide.with(itemView.context)
+                    .load("$MAIN_IMAGE_URL${listItem.id}.png")
+                    .placeholder(R.drawable.ic_launcher_foreground)
                     .into(pokemonIcon)
             }
-        }
+       }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {

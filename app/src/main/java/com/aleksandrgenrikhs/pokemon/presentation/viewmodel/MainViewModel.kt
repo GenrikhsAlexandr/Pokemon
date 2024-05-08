@@ -15,13 +15,14 @@ import javax.inject.Inject
 
 class MainViewModel
 @Inject constructor(
-    val interator: PokemonInteractor,
+    private val interator: PokemonInteractor,
 ) : ViewModel() {
 
     private val _pokemon: MutableStateFlow<Page?> = MutableStateFlow(null)
     val pokemon: StateFlow<Page?> = _pokemon
 
-    val isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isProgressBarVisible: StateFlow<Boolean> = _isProgressBarVisible
 
     val toastMessageError: MutableSharedFlow<ResultState.Error> = MutableSharedFlow(
         extraBufferCapacity = 1,
@@ -34,7 +35,7 @@ class MainViewModel
 
     fun getPokemon(page: Int?) {
         viewModelScope.launch {
-            isProgressBarVisible.value = true
+            _isProgressBarVisible.value = true
             when (val pokemon = interator.getPokemon(page)) {
                 is ResultState.Error -> {
                     toastMessageError.tryEmit(ResultState.Error(pokemon.message))
@@ -44,7 +45,7 @@ class MainViewModel
                     _pokemon.value = pokemon.data
                 }
             }
-            isProgressBarVisible.value = false
+            _isProgressBarVisible.value = false
         }
     }
 }

@@ -39,13 +39,13 @@ class MainFragment : Fragment() {
     private val binding: FragmentMainBinding get() = _binding!!
 
     private val adapter: PokemonAdapter by lazy {
-        PokemonAdapter(onClick = { pokemon -> onItemClick(pokemon) })
+        PokemonAdapter(onClick = { pokemonId -> onItemClick(pokemonId) })
     }
 
-    private fun onItemClick(pokemon: Int) {
+    private fun onItemClick(pokemonId: Int) {
         navController.navigate(
             MainFragmentDirections.actionMainFragmentToDetailFragment(
-                pokemon
+                pokemonId
             )
         )
     }

@@ -1,6 +1,8 @@
 package com.aleksandrgenrikhs.pokemon.data
 
 import android.app.Application
+import android.media.MediaPlayer
+import android.net.Uri
 import com.aleksandrgenrikhs.pokemon.R
 import com.aleksandrgenrikhs.pokemon.ResultState
 import com.aleksandrgenrikhs.pokemon.domain.NetworkConnectionChecker
@@ -10,11 +12,13 @@ import com.aleksandrgenrikhs.pokemon.domain.Repository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import java.io.IOException
 import javax.inject.Inject
 
 class RepositoryImpl
@@ -24,14 +28,21 @@ class RepositoryImpl
     private val application: Application
 ) : Repository {
 
+    private var mediaPlayer: MediaPlayer? = null
+
     companion object {
         const val LIMIT = 20
         private const val BASE_URL = "https://pokeapi.co/api/v2/"
-        const val IMAGE_URL =
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
+        const val MAIN_IMAGE_URL =
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/"
+        const val SHOW_DOWN_BACK_IMAGE_URL =
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/"
+        const val SHOW_DOWN_FRONT_IMAGE_URL =
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/"
         private val json = Json { ignoreUnknownKeys = true }
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
@@ -58,8 +69,7 @@ class RepositoryImpl
             } else {
                 try {
                     val response = service.getPokemon(offset = offset, limit = LIMIT)
-                    val pokemonList = mapper.mapToPokemon(response)
-                    return@withContext ResultState.Success(pokemonList)
+                    return@withContext ResultState.Success(mapper.mapToPokemon(response))
                 } catch (e: Exception) {
                     e.printStackTrace()
                     return@withContext ResultState.Error(R.string.error_message_response)
@@ -68,9 +78,38 @@ class RepositoryImpl
         }
     }
 
-    //  override suspend fun getOffset(): Offset = mapper.mapOffsetToUrl(response)
+    override suspend fun getDetailPokemon(pokemonId: Int): ResultState<PokemonDetail> =
+        withContext(Dispatchers.IO) {
+            if (!networkConnected.isNetworkConnected(application)) {
+                return@withContext ResultState.Error(R.string.error_message)
+            } else {
+                try {
+                    val response = service.getDetailPokemon(id = pokemonId)
+                    return@withContext ResultState.Success(mapper.mapTODetail(response))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    return@withContext ResultState.Error(R.string.error_message_response)
+                }
+            }
+        }
 
-    override suspend fun getDetailPokemon(urlDetail: String): ResultState<PokemonDetail> {
-        TODO("Not yet implemented")
+    override suspend fun initPlayer(url: String): ResultState<MediaPlayer?> =
+        withContext(Dispatchers.IO) {
+            try {
+                mediaPlayer = MediaPlayer().apply {
+                    setDataSource(application, Uri.parse(url))
+                    prepare()
+                   start()
+                }
+                ResultState.Success(mediaPlayer)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                ResultState.Error(R.string.error_message_response)
+            }
+        }
+
+    override fun playerDestroy() {
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 }

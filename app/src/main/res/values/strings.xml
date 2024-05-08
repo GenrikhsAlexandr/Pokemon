@@ -4,4 +4,8 @@
     <string name="previous">Предыдущий</string>
     <string name="error_message">Произошла ошибка, проверьте подключение к интернету</string>
     <string name="error_message_response">Что-то пошло не так</string>
+    <string name="base_experience">Опыт: %1$s</string>
+    <string name="weight">Вес: %1$s</string>
+    <string name="height">Рост: %1$s</string>
+    <string name="cries">Крик</string>
 </resources>

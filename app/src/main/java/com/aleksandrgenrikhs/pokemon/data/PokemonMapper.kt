@@ -2,26 +2,40 @@ package com.aleksandrgenrikhs.pokemon.data
 
 import com.aleksandrgenrikhs.pokemon.domain.Page
 import com.aleksandrgenrikhs.pokemon.domain.Pokemon
+import com.aleksandrgenrikhs.pokemon.domain.PokemonDetail
 import javax.inject.Inject
 
 class PokemonMapper
-@Inject constructor(){
+@Inject constructor() {
 
-    fun mapToPokemon(offset: PokemonListDto):  Page {
+    fun mapToPokemon(offset: PokemonListDto): Page {
         val nextOffset = extractOffsetFromUrl(offset.next)
         val previousOffset = extractOffsetFromUrl(offset.previous)
-        return Page (
+        return Page(
             next = nextOffset,
             previous = previousOffset,
             pokemon = offset.results.map {
                 val pokemonId = extractIdFromUrl(it.url)
                 Pokemon(
-                  id = pokemonId,
+                    id = pokemonId,
                     name = it.name,
                     url = it.url,
-              )
+                )
             }
         )
+    }
+
+    fun mapTODetail(pokemon: PokemonDetailDto): PokemonDetail {
+        with(pokemon) {
+            return PokemonDetail(
+                id = id,
+                name = name,
+                height = height.toString(),
+                weight = weight.toString(),
+                cries = cries.latest,
+                experience = base_experience.toString()
+            )
+        }
     }
 
     private fun extractOffsetFromUrl(url: String?): Int? {
@@ -33,7 +47,7 @@ class PokemonMapper
         return matchResult?.groupValues?.get(1)?.toInt()
     }
 
-    private fun extractIdFromUrl(url:String): Int {
+    private fun extractIdFromUrl(url: String): Int {
         val regex = Regex("""/(\d+)/""")
         val matchResult = regex.find(url)
         return matchResult?.groupValues?.get(1)?.toInt() ?: -1

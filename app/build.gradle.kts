@@ -78,5 +78,6 @@ dependencies {
 
     implementation(libs.androidx.core.splashscreen)
 
-    implementation(libs.picasso)
+    implementation (libs.glide)
+
 }

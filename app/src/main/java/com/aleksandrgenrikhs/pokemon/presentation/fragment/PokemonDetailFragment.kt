@@ -1,27 +1,105 @@
 package com.aleksandrgenrikhs.pokemon.presentation.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.navArgs
+import com.aleksandrgenrikhs.pokemon.R
+import com.aleksandrgenrikhs.pokemon.app
+import com.aleksandrgenrikhs.pokemon.data.RepositoryImpl.Companion.SHOW_DOWN_BACK_IMAGE_URL
+import com.aleksandrgenrikhs.pokemon.data.RepositoryImpl.Companion.SHOW_DOWN_FRONT_IMAGE_URL
 import com.aleksandrgenrikhs.pokemon.databinding.FragmentPokemonDetailBinding
+import com.aleksandrgenrikhs.pokemon.presentation.factory.PokemonDetailViewModelAssistedFactory
+import com.aleksandrgenrikhs.pokemon.presentation.viewmodel.PokemonDetailViewModel
+import com.bumptech.glide.Glide
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class PokemonDetailFragment : Fragment() {
 
+    private val args by navArgs<PokemonDetailFragmentArgs>()
+
+    private val navController: NavController by lazy {
+        (requireActivity().supportFragmentManager.findFragmentById(R.id.main_activity_nav_host) as NavHostFragment)
+            .navController
+    }
+
+    @Inject
+    lateinit var pokemonDetailViewModel: PokemonDetailViewModelAssistedFactory
+    private val viewModel: PokemonDetailViewModel by viewModels {
+        pokemonDetailViewModel.create(
+            args.pokemonId
+        )
+    }
+
     private var _binding: FragmentPokemonDetailBinding? = null
     private val binding: FragmentPokemonDetailBinding get() = _binding!!
+
+    override fun onAttach(context: Context) {
+        (app.appComponent.inject(this))
+        super.onAttach(context)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPokemonDetailBinding.inflate(inflater, container, false)
+        onClickBack()
+        subscribe()
+        onClickCriesButton()
         return binding.root
+    }
+
+    private fun onClickBack() {
+        binding.backButton.setOnClickListener {
+            navController.popBackStack()
+        }
+    }
+
+    private fun onClickCriesButton() {
+        binding.cries.setOnClickListener {
+            viewModel.cries()
+        }
+    }
+
+    private fun subscribe() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.pokemonDetail.collect { pokemon ->
+                binding.experience.text = getString(R.string.base_experience, pokemon?.experience)
+                binding.height.text = getString(R.string.height, pokemon?.height)
+                binding.weight.text = getString(R.string.weight, pokemon?.weight)
+                binding.title.text = pokemon?.name?.uppercase()
+                Glide.with(requireActivity().app)
+                    .asGif()
+                    .load("$SHOW_DOWN_FRONT_IMAGE_URL${pokemon?.id}.gif")
+                    .into(binding.iconFront)
+                Glide.with(requireActivity().app)
+                    .asGif()
+                    .load("$SHOW_DOWN_BACK_IMAGE_URL${pokemon?.id}.gif")
+                    .into(binding.iconBackPokemon)
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isProgressBarVisible.collect { isVisible ->
+                binding.progressBar.isVisible = isVisible
+                binding.pokemonCard.isVisible = !isVisible
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        viewModel.destroyPlayer()
     }
 }
