@@ -6,7 +6,7 @@ import com.aleksandrgenrikhs.pokemon.utils.ResultState
 
 interface Repository {
 
-    suspend fun getPokemon(offset: Int?): ResultState<Page?>
+    suspend fun getPokemon(offset: Int?, limit:Int?): ResultState<Page?>
 
     suspend fun getDetailPokemon(pokemonId: Int): ResultState<PokemonDetail>
 

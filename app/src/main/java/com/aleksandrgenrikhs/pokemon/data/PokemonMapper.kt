@@ -11,13 +11,15 @@ import javax.inject.Inject
 class PokemonMapper
 @Inject constructor() {
 
-    fun mapToPokemon(offset: PokemonListDto): Page {
-        val nextOffset = extractOffsetFromUrl(offset.next)
-        val previousOffset = extractOffsetFromUrl(offset.previous)
+    fun mapToPokemon(pokemon: PokemonListDto): Page {
+        val (nextOffset, nextLimit) = extractOffsetAndLimitFromUrl(pokemon.next)
+        val (previousOffset, previousLimit) = extractOffsetAndLimitFromUrl(pokemon.previous)
         return Page(
-            next = nextOffset,
-            previous = previousOffset,
-            pokemon = offset.results.map {
+            nextOffset = nextOffset,
+            nextLimit = nextLimit,
+            previousOffset = previousOffset,
+            previousLimit = previousLimit,
+            pokemon = pokemon.results.map {
                 val pokemonId = extractIdFromUrl(it.url)
                 Pokemon(
                     id = pokemonId,
@@ -43,18 +45,17 @@ class PokemonMapper
         }
     }
 
-    private fun extractOffsetFromUrl(url: String?): Int? {
+    private fun extractOffsetAndLimitFromUrl(url: String?): Pair<Int?, Int?> {
         if (url == null) {
-            return null
+            return Pair(null, null)
         }
-        val regex = Regex("""\?offset=(\d+)""")
-        val matchResult = regex.find(url)
-        return matchResult?.groupValues?.get(1)?.toInt()
+        val matchResult = Regex("""\?offset=(\d+)&limit=(\d+)""").find(url)
+        val offset = matchResult?.groupValues?.get(1)?.toInt()
+        val limit = matchResult?.groupValues?.get(2)?.toInt()
+        return Pair(offset, limit)
     }
 
     private fun extractIdFromUrl(url: String): Int {
-        val regex = Regex("""/(\d+)/""")
-        val matchResult = regex.find(url)
-        return matchResult?.groupValues?.get(1)?.toInt() ?: -1
+        return Regex("""/(\d+)/""").find(url)?.groupValues?.get(1)?.toInt() ?: 0
     }
 }

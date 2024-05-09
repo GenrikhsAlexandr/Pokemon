@@ -31,10 +31,7 @@ class RepositoryImpl
 
     private var mediaPlayer: MediaPlayer? = null
 
-    companion object {
-        const val LIMIT = 20
-        private val json = Json { ignoreUnknownKeys = true }
-    }
+    private val json = Json { ignoreUnknownKeys = true }
 
     @OptIn(ExperimentalSerializationApi::class)
     private val retrofit = Retrofit.Builder()
@@ -56,13 +53,13 @@ class RepositoryImpl
 
     private val service: ApiService = retrofit.create(ApiService::class.java)
 
-    override suspend fun getPokemon(offset: Int?): ResultState<Page?> {
+    override suspend fun getPokemon(offset: Int?, limit: Int?): ResultState<Page?> {
         return withContext(Dispatchers.IO) {
             if (!networkConnected.isNetworkConnected(application)) {
                 return@withContext ResultState.Error(R.string.error_message)
             } else {
                 try {
-                    val response = service.getPokemon(offset = offset, limit = LIMIT)
+                    val response = service.getPokemon(offset = offset, limit = limit)
                     return@withContext ResultState.Success(mapper.mapToPokemon(response))
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -93,7 +90,7 @@ class RepositoryImpl
                 mediaPlayer = MediaPlayer().apply {
                     setDataSource(application, Uri.parse(url))
                     prepare()
-                   start()
+                    start()
                 }
                 ResultState.Success(mediaPlayer)
             } catch (e: IOException) {

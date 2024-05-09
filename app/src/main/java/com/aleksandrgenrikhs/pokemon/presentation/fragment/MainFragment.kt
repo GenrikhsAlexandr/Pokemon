@@ -123,13 +123,13 @@ class MainFragment : Fragment() {
 
     private fun clickButton() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.pokemon.collect { offset ->
+            viewModel.pokemon.collect {nextPokemon->
                 binding.nextButton.setOnClickListener {
-                    viewModel.getPokemon(offset?.next)
+                    viewModel.getPokemon(nextPokemon?.nextOffset, nextPokemon?.nextLimit)
                     binding.buttonGroup.isVisible = false
                 }
                 binding.previousButton.setOnClickListener {
-                    viewModel.getPokemon(offset?.previous)
+                    viewModel.getPokemon(nextPokemon?.previousOffset, nextPokemon?.previousLimit)
                     binding.buttonGroup.isVisible = false
                 }
             }

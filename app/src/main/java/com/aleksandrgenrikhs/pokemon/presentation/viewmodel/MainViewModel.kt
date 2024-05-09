@@ -37,21 +37,22 @@ class MainViewModel
     )
 
     init {
-        getPokemon(0)
+        getPokemon(pokemon.value?.nextOffset,pokemon.value?.nextLimit)
     }
 
-    fun getPokemon(page: Int?) {
+    fun getPokemon(offset: Int?, limit:Int?) {
         viewModelScope.launch {
             _isProgressBarVisible.value = true
-            when (val pokemon = interator.getPokemon(page)) {
+            when (val pokemonList = interator.getPokemon(offset, limit)) {
                 is ResultState.Error -> {
-                    toastMessageError.tryEmit(ResultState.Error(pokemon.message))
+                    toastMessageError.tryEmit(ResultState.Error(pokemonList.message))
                 }
 
                 is ResultState.Success -> {
-                    _pokemon.value = pokemon.data
-                    _isNextButtonVisible.value = pokemon.data?.next != null
-                    _isPreviousButtonVisible.value = pokemon.data?.previous != null
+                    _pokemon.value = pokemonList.data
+                    _isNextButtonVisible.value = pokemonList.data?.nextOffset != null
+                    _isPreviousButtonVisible.value = pokemonList.data?.previousOffset != null
+                    println("pokemon = ${pokemon.value}")
                 }
             }
             _isProgressBarVisible.value = false

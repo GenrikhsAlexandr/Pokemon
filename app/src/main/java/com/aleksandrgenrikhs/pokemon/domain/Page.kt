@@ -1,7 +1,9 @@
 package com.aleksandrgenrikhs.pokemon.domain
 
 data class Page(
-    val next:Int? = 0,
-    val previous:Int? = null,
+    val nextOffset: Int? =0,
+    val nextLimit: Int? =20,
+    val previousOffset:Int?,
+    val previousLimit:Int?,
     val pokemon: List <Pokemon>,
 )

@@ -9,7 +9,7 @@ interface ApiService {
     @GET("pokemon/")
     suspend fun getPokemon(
         @Query(QUERY_PARAM_OFFSET) offset: Int?,
-        @Query(QUERY_PARAM_LIMIT) limit: Int,
+        @Query(QUERY_PARAM_LIMIT) limit: Int?,
     ): PokemonListDto
 
     @GET("pokemon/{id}")
