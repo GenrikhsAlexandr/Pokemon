@@ -3,6 +3,9 @@ package com.aleksandrgenrikhs.pokemon.data
 import com.aleksandrgenrikhs.pokemon.domain.Page
 import com.aleksandrgenrikhs.pokemon.domain.Pokemon
 import com.aleksandrgenrikhs.pokemon.domain.PokemonDetail
+import com.aleksandrgenrikhs.pokemon.utils.UrlConstants.MAIN_IMAGE_URL
+import com.aleksandrgenrikhs.pokemon.utils.UrlConstants.SHOW_DOWN_BACK_IMAGE_URL
+import com.aleksandrgenrikhs.pokemon.utils.UrlConstants.SHOW_DOWN_FRONT_IMAGE_URL
 import javax.inject.Inject
 
 class PokemonMapper
@@ -19,7 +22,7 @@ class PokemonMapper
                 Pokemon(
                     id = pokemonId,
                     name = it.name,
-                    url = it.url,
+                    iconUrl = "$MAIN_IMAGE_URL$pokemonId.png"
                 )
             }
         )
@@ -33,7 +36,9 @@ class PokemonMapper
                 height = height.toString(),
                 weight = weight.toString(),
                 cries = cries.latest,
-                experience = base_experience.toString()
+                experience = base_experience.toString(),
+                iconBackUrl = "$SHOW_DOWN_BACK_IMAGE_URL$id.gif",
+                iconFrontUrl = "$SHOW_DOWN_FRONT_IMAGE_URL$id.gif"
             )
         }
     }

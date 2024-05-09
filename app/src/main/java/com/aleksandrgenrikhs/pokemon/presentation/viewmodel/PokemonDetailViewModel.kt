@@ -2,9 +2,9 @@ package com.aleksandrgenrikhs.pokemon.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aleksandrgenrikhs.pokemon.ResultState
 import com.aleksandrgenrikhs.pokemon.domain.PokemonDetail
 import com.aleksandrgenrikhs.pokemon.domain.PokemonInteractor
+import com.aleksandrgenrikhs.pokemon.utils.ResultState
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

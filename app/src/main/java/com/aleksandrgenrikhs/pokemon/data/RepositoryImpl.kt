@@ -4,11 +4,12 @@ import android.app.Application
 import android.media.MediaPlayer
 import android.net.Uri
 import com.aleksandrgenrikhs.pokemon.R
-import com.aleksandrgenrikhs.pokemon.ResultState
 import com.aleksandrgenrikhs.pokemon.domain.NetworkConnectionChecker
 import com.aleksandrgenrikhs.pokemon.domain.Page
 import com.aleksandrgenrikhs.pokemon.domain.PokemonDetail
 import com.aleksandrgenrikhs.pokemon.domain.Repository
+import com.aleksandrgenrikhs.pokemon.utils.ResultState
+import com.aleksandrgenrikhs.pokemon.utils.UrlConstants.BASE_URL
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -32,13 +33,6 @@ class RepositoryImpl
 
     companion object {
         const val LIMIT = 20
-        private const val BASE_URL = "https://pokeapi.co/api/v2/"
-        const val MAIN_IMAGE_URL =
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/"
-        const val SHOW_DOWN_BACK_IMAGE_URL =
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/"
-        const val SHOW_DOWN_FRONT_IMAGE_URL =
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/"
         private val json = Json { ignoreUnknownKeys = true }
     }
 

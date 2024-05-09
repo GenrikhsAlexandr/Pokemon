@@ -14,8 +14,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.navArgs
 import com.aleksandrgenrikhs.pokemon.R
 import com.aleksandrgenrikhs.pokemon.app
-import com.aleksandrgenrikhs.pokemon.data.RepositoryImpl.Companion.SHOW_DOWN_BACK_IMAGE_URL
-import com.aleksandrgenrikhs.pokemon.data.RepositoryImpl.Companion.SHOW_DOWN_FRONT_IMAGE_URL
 import com.aleksandrgenrikhs.pokemon.databinding.FragmentPokemonDetailBinding
 import com.aleksandrgenrikhs.pokemon.presentation.factory.PokemonDetailViewModelAssistedFactory
 import com.aleksandrgenrikhs.pokemon.presentation.viewmodel.PokemonDetailViewModel
@@ -74,18 +72,20 @@ class PokemonDetailFragment : Fragment() {
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.pokemonDetail.collect { pokemon ->
-                binding.experience.text = getString(R.string.base_experience, pokemon?.experience)
-                binding.height.text = getString(R.string.height, pokemon?.height)
-                binding.weight.text = getString(R.string.weight, pokemon?.weight)
-                binding.title.text = pokemon?.name?.uppercase()
-                Glide.with(requireActivity().app)
-                    .asGif()
-                    .load("$SHOW_DOWN_FRONT_IMAGE_URL${pokemon?.id}.gif")
-                    .into(binding.iconFront)
-                Glide.with(requireActivity().app)
-                    .asGif()
-                    .load("$SHOW_DOWN_BACK_IMAGE_URL${pokemon?.id}.gif")
-                    .into(binding.iconBackPokemon)
+                with(binding) {
+                    experience.text = getString(R.string.base_experience, pokemon?.experience)
+                    height.text = getString(R.string.height, pokemon?.height)
+                    weight.text = getString(R.string.weight, pokemon?.weight)
+                    title.text = pokemon?.name?.uppercase()
+                    Glide.with(app)
+                        .asGif()
+                        .load(pokemon?.iconFrontUrl)
+                        .into(iconFront)
+                    Glide.with(app)
+                        .asGif()
+                        .load(pokemon?.iconBackUrl)
+                        .into(iconBackPokemon)
+                }
             }
         }
 

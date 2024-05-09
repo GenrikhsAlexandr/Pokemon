@@ -6,5 +6,7 @@ data class PokemonDetail (
     val height: String,
     val weight: String,
     val cries: String,
-    val experience:String
+    val experience:String,
+    val iconFrontUrl: String,
+    val iconBackUrl: String,
 )

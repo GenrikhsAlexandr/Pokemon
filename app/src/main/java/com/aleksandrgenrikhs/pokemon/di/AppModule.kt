@@ -1,10 +1,10 @@
 package com.aleksandrgenrikhs.pokemon.di
 
-import com.aleksandrgenrikhs.pokemon.NetworkConnected
-import com.aleksandrgenrikhs.pokemon.di.viewModel.ViewModelsBindingModule
 import com.aleksandrgenrikhs.pokemon.data.RepositoryImpl
+import com.aleksandrgenrikhs.pokemon.di.viewModel.ViewModelsBindingModule
 import com.aleksandrgenrikhs.pokemon.domain.NetworkConnectionChecker
 import com.aleksandrgenrikhs.pokemon.domain.Repository
+import com.aleksandrgenrikhs.pokemon.utils.NetworkConnected
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

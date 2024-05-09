@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.aleksandrgenrikhs.pokemon.R
-import com.aleksandrgenrikhs.pokemon.data.RepositoryImpl.Companion.MAIN_IMAGE_URL
 import com.aleksandrgenrikhs.pokemon.databinding.PokemonItemBinding
 import com.aleksandrgenrikhs.pokemon.domain.Pokemon
 import com.bumptech.glide.Glide
@@ -37,8 +36,9 @@ class PokemonAdapter(
                     onClick(listItem.id)
                 }
                 Glide.with(itemView.context)
-                    .load("$MAIN_IMAGE_URL${listItem.id}.png")
+                    .load(listItem.iconUrl)
                     .placeholder(R.drawable.ic_launcher_foreground)
+                    .error(R.drawable.ic_launcher_foreground)
                     .into(pokemonIcon)
             }
        }

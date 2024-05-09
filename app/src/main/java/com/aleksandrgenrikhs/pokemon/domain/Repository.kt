@@ -1,7 +1,7 @@
 package com.aleksandrgenrikhs.pokemon.domain
 
 import android.media.MediaPlayer
-import com.aleksandrgenrikhs.pokemon.ResultState
+import com.aleksandrgenrikhs.pokemon.utils.ResultState
 
 
 interface Repository {

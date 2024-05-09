@@ -2,9 +2,9 @@ package com.aleksandrgenrikhs.pokemon.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aleksandrgenrikhs.pokemon.ResultState
 import com.aleksandrgenrikhs.pokemon.domain.Page
 import com.aleksandrgenrikhs.pokemon.domain.PokemonInteractor
+import com.aleksandrgenrikhs.pokemon.utils.ResultState
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +23,13 @@ class MainViewModel
 
     private val _isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isProgressBarVisible: StateFlow<Boolean> = _isProgressBarVisible
+
+    private val _isNextButtonVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isNextButtonVisible: StateFlow<Boolean> = _isNextButtonVisible
+
+    private val _isPreviousButtonVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isPreviousButtonVisible: StateFlow<Boolean> = _isPreviousButtonVisible
+
 
     val toastMessageError: MutableSharedFlow<ResultState.Error> = MutableSharedFlow(
         extraBufferCapacity = 1,
@@ -43,6 +50,8 @@ class MainViewModel
 
                 is ResultState.Success -> {
                     _pokemon.value = pokemon.data
+                    _isNextButtonVisible.value = pokemon.data?.next != null
+                    _isPreviousButtonVisible.value = pokemon.data?.previous != null
                 }
             }
             _isProgressBarVisible.value = false

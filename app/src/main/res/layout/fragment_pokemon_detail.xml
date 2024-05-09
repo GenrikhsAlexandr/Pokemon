@@ -11,17 +11,18 @@
         android:layout_height="50dp"
         android:indeterminate="true"
         app:indicatorColor="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/pokemonCard"
+        style="?attr/materialCardViewElevatedStyle"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:elevation="2dp"
+        app:cardBackgroundColor="@color/colorDetail"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +33,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:background="@color/colorDetail"
             android:orientation="vertical">
 
             <TextView
@@ -65,7 +65,7 @@
                 android:id="@+id/iconFront"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_margin="16sp"
+                android:layout_margin="16dp"
                 android:importantForAccessibility="no"
                 app:layout_constraintBottom_toTopOf="@+id/guidelineHorizontal"
                 app:layout_constraintEnd_toStartOf="@id/guidelineVertical"
@@ -76,7 +76,7 @@
                 android:id="@+id/iconBackPokemon"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_margin="16sp"
+                android:layout_margin="16dp"
                 android:importantForAccessibility="no"
                 app:layout_constraintBottom_toTopOf="@id/guidelineHorizontal"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -89,10 +89,9 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:textAppearance="@style/TextAppearance.Pokemon"
-                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/guidelineHorizontal"
+                app:layout_constraintTop_toBottomOf="@id/cries"
                 tools:text="@string/base_experience" />
 
             <TextView
@@ -101,7 +100,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:textAppearance="@style/TextAppearance.Pokemon"
-                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/experience"
@@ -113,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:textAppearance="@style/TextAppearance.Pokemon"
-                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/height"
@@ -122,16 +120,14 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/cries"
                 style="@style/Widget.Pokemon.Button.Primary"
-                android:layout_width="150dp"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:text="@string/cries"
-                android:textAllCaps="true"
                 app:icon="@drawable/ic_play"
+                app:iconGravity="textStart"
                 app:iconTint="@color/colorDetail"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/weight" />
+                app:layout_constraintTop_toBottomOf="@+id/guidelineHorizontal" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -140,10 +136,10 @@
         android:id="@+id/backButton"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/ic_back"
-        android:layout_margin="8dp"
         android:layout_gravity="bottom"
+        android:layout_margin="8dp"
         android:importantForAccessibility="no"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:src="@drawable/ic_back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

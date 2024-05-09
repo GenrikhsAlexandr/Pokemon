@@ -17,15 +17,13 @@ import com.aleksandrgenrikhs.pokemon.R
 import com.aleksandrgenrikhs.pokemon.app
 import com.aleksandrgenrikhs.pokemon.databinding.FragmentMainBinding
 import com.aleksandrgenrikhs.pokemon.presentation.BottomOffsetDecoration
-import com.aleksandrgenrikhs.pokemon.presentation.viewmodel.MainViewModel
 import com.aleksandrgenrikhs.pokemon.presentation.PokemonAdapter
+import com.aleksandrgenrikhs.pokemon.presentation.viewmodel.MainViewModel
 import com.aleksandrgenrikhs.pokemon.viewModelFactory
 import kotlinx.coroutines.launch
 
 class MainFragment : Fragment() {
 
-    private var nextPage: Int? = null
-    private var previousPage: Int? = null
     private var isScrollingUp = false
 
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
@@ -85,26 +83,12 @@ class MainFragment : Fragment() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1) && !isScrollingUp) {
-                    binding.buttonGroup.visibility = View.VISIBLE
-                    showButton()
+                    binding.buttonGroup.isVisible = true
                 } else {
-                    binding.buttonGroup.visibility = View.GONE
+                    binding.buttonGroup.isVisible = true
                 }
             }
         })
-    }
-
-    private fun showButton() {
-        if (nextPage == null) {
-            binding.nextButton.visibility = View.GONE
-        } else {
-            binding.nextButton.visibility = View.VISIBLE
-        }
-        if (previousPage == null) {
-            binding.previousButton.visibility = View.GONE
-        } else {
-            binding.previousButton.visibility = View.VISIBLE
-        }
     }
 
     private fun subscribe() {
@@ -125,20 +109,28 @@ class MainFragment : Fragment() {
                 binding.progressBar.isVisible = isVisible
             }
         }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isNextButtonVisible.collect { isVisible ->
+                binding.nextButton.isVisible = isVisible
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isPreviousButtonVisible.collect { isVisible ->
+                binding.previousButton.isVisible = isVisible
+            }
+        }
     }
 
     private fun clickButton() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.pokemon.collect { offset ->
-                nextPage = offset?.next
-                previousPage = offset?.previous
                 binding.nextButton.setOnClickListener {
                     viewModel.getPokemon(offset?.next)
-                    binding.buttonGroup.visibility = View.GONE
+                    binding.buttonGroup.isVisible = false
                 }
                 binding.previousButton.setOnClickListener {
                     viewModel.getPokemon(offset?.previous)
-                    binding.buttonGroup.visibility = View.GONE
+                    binding.buttonGroup.isVisible = false
                 }
             }
         }
