@@ -85,7 +85,7 @@ class MainFragment : Fragment() {
                 if (!recyclerView.canScrollVertically(1) && !isScrollingUp) {
                     binding.buttonGroup.isVisible = true
                 } else {
-                    binding.buttonGroup.isVisible = true
+                    binding.buttonGroup.isVisible = false
                 }
             }
         })
