@@ -1,9 +1,11 @@
 package com.aleksandrgenrikhs.pokemon.presentation.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.pokemon.domain.PokemonDetail
 import com.aleksandrgenrikhs.pokemon.domain.PokemonInteractor
+import com.aleksandrgenrikhs.pokemon.utils.PokemonMediaPlayer
 import com.aleksandrgenrikhs.pokemon.utils.ResultState
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,6 +18,9 @@ class PokemonDetailViewModel
 @Inject constructor(
     pokemonId: Int,
     private val interactor: PokemonInteractor,
+    private val mediaPlayer: PokemonMediaPlayer,
+    private val application: Application
+
 ) : ViewModel() {
 
     private val _pokemonDetail: MutableStateFlow<PokemonDetail?> = MutableStateFlow(null)
@@ -32,14 +37,14 @@ class PokemonDetailViewModel
     init {
         viewModelScope.launch {
             _isProgressBarVisible.value = true
-            when (val pokemon = interactor.getDetailPokemon(pokemonId)
+            when (val result = interactor.getDetailPokemon(pokemonId)
             ) {
                 is ResultState.Error -> {
-                    toastMessageError.tryEmit(ResultState.Error(pokemon.message))
+                    toastMessageError.tryEmit(ResultState.Error(result.message))
                 }
 
                 is ResultState.Success -> {
-                    _pokemonDetail.value = pokemon.data
+                    _pokemonDetail.value = result.data
                 }
             }
             _isProgressBarVisible.value = false
@@ -47,24 +52,13 @@ class PokemonDetailViewModel
     }
 
     fun cries() {
-        viewModelScope.launch {
-            val url = ("${pokemonDetail.value?.cries}")
-            when (val cries = interactor.getCries(url)) {
-                is ResultState.Success -> {
-                    cries.data
-                }
-
-                is ResultState.Error -> {
-                    interactor.playerDestroy()
-                    toastMessageError.tryEmit(ResultState.Error(cries.message))
-                }
-            }
-        }
+        val url = ("${pokemonDetail.value?.cries}")
+        mediaPlayer.initPlayer(application, url)
+        mediaPlayer.play()
     }
 
-    fun destroyPlayer() {
-        viewModelScope.launch {
-            interactor.playerDestroy()
-        }
+    override fun onCleared() {
+        super.onCleared()
+        mediaPlayer.destroyPlayer()
     }
 }

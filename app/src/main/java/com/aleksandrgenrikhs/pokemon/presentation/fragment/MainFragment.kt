@@ -26,15 +26,15 @@ class MainFragment : Fragment() {
 
     private var isScrollingUp = false
 
+    private var _binding: FragmentMainBinding? = null
+    private val binding: FragmentMainBinding get() = _binding!!
+
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
 
     private val navController: NavController by lazy {
         (requireActivity().supportFragmentManager.findFragmentById(R.id.main_activity_nav_host) as NavHostFragment)
             .navController
     }
-
-    private var _binding: FragmentMainBinding? = null
-    private val binding: FragmentMainBinding get() = _binding!!
 
     private val adapter: PokemonAdapter by lazy {
         PokemonAdapter(onClick = { pokemonId -> onItemClick(pokemonId) })
@@ -53,17 +53,20 @@ class MainFragment : Fragment() {
         (app.appComponent.inject(this))
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.pokemonRV.adapter = adapter
         subscribe()
         scrollListenerRecycle()
         clickButton()
-        return binding.root
     }
 
     private fun scrollListenerRecycle() {
@@ -83,9 +86,9 @@ class MainFragment : Fragment() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1) && !isScrollingUp) {
-                    binding.buttonGroup.isVisible = true
+                    viewModel.showButtonGroup()
                 } else {
-                    binding.buttonGroup.isVisible = false
+                    viewModel.hideButtonGroup()
                 }
             }
         })
@@ -93,9 +96,11 @@ class MainFragment : Fragment() {
 
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.pokemon.collect { pokemon ->
-                if (pokemon != null) {
-                    adapter.submitList(pokemon.pokemon)
+            viewModel.page.collect { page ->
+                if (page != null) {
+                    adapter.submitList(page.pokemon)
+                    binding.previousButton.isVisible = page.hasPreviousPage
+                    binding.nextButton.isVisible = page.hasNextPage
                 }
             }
         }
@@ -110,29 +115,20 @@ class MainFragment : Fragment() {
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.isNextButtonVisible.collect { isVisible ->
-                binding.nextButton.isVisible = isVisible
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.isPreviousButtonVisible.collect { isVisible ->
-                binding.previousButton.isVisible = isVisible
+            viewModel.isButtonGroupVisible.collect { isVisible ->
+                binding.buttonGroup.isVisible = isVisible
             }
         }
     }
 
     private fun clickButton() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.pokemon.collect {nextPokemon->
-                binding.nextButton.setOnClickListener {
-                    viewModel.getPokemon(nextPokemon?.nextOffset, nextPokemon?.nextLimit)
-                    binding.buttonGroup.isVisible = false
-                }
-                binding.previousButton.setOnClickListener {
-                    viewModel.getPokemon(nextPokemon?.previousOffset, nextPokemon?.previousLimit)
-                    binding.buttonGroup.isVisible = false
-                }
-            }
+        binding.nextButton.setOnClickListener {
+            viewModel.getNextPage()
+            viewModel.hideButtonGroup()
+        }
+        binding.previousButton.setOnClickListener {
+            viewModel.getPreviousPage()
+            viewModel.hideButtonGroup()
         }
     }
 

@@ -1,5 +1,6 @@
 package com.aleksandrgenrikhs.pokemon.data
 
+import android.net.Uri
 import com.aleksandrgenrikhs.pokemon.domain.Page
 import com.aleksandrgenrikhs.pokemon.domain.Pokemon
 import com.aleksandrgenrikhs.pokemon.domain.PokemonDetail
@@ -11,15 +12,14 @@ import javax.inject.Inject
 class PokemonMapper
 @Inject constructor() {
 
-    fun mapToPokemon(pokemon: PokemonListDto): Page {
-        val (nextOffset, nextLimit) = extractOffsetAndLimitFromUrl(pokemon.next)
-        val (previousOffset, previousLimit) = extractOffsetAndLimitFromUrl(pokemon.previous)
+    fun mapToPage(page: PokemonListDto): Page {
+        val nextOffset = extractOffsetFromUrl(page.next)
+        val previousOffset = extractOffsetFromUrl(page.previous)
         return Page(
+            count = page.count,
             nextOffset = nextOffset,
-            nextLimit = nextLimit,
             previousOffset = previousOffset,
-            previousLimit = previousLimit,
-            pokemon = pokemon.results.map {
+            pokemon = page.results.map {
                 val pokemonId = extractIdFromUrl(it.url)
                 Pokemon(
                     id = pokemonId,
@@ -45,17 +45,23 @@ class PokemonMapper
         }
     }
 
-    private fun extractOffsetAndLimitFromUrl(url: String?): Pair<Int?, Int?> {
-        if (url == null) {
-            return Pair(null, null)
+    private fun extractOffsetFromUrl(url: String?): Int {
+        val uri = try {
+            Uri.parse(url)
+        } catch (e: Exception) {
+            return -1
         }
-        val matchResult = Regex("""\?offset=(\d+)&limit=(\d+)""").find(url)
-        val offset = matchResult?.groupValues?.get(1)?.toInt()
-        val limit = matchResult?.groupValues?.get(2)?.toInt()
-        return Pair(offset, limit)
+        return uri.getQueryParameter("offset")!!.toInt()
     }
 
     private fun extractIdFromUrl(url: String): Int {
-        return Regex("""/(\d+)/""").find(url)?.groupValues?.get(1)?.toInt() ?: 0
+        val uri = try {
+            Uri.parse(url)
+        } catch (e: Exception) {
+            return 0
+        }
+        return uri.path?.split("/")?.filter {
+            it.isNotEmpty()
+        }?.last()?.toInt() ?:0
     }
 }

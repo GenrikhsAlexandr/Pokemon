@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:fitsSystemWindows">true</item>
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
