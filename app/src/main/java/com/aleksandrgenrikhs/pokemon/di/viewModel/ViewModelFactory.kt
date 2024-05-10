@@ -13,7 +13,7 @@ class ViewModelFactory @Inject constructor(
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModelProvider = viewModelFactories[modelClass as Class<ViewModel>]
-            ?: throw IllegalArgumentException("Declare $modelClass in ${ViewModelsBindingModule::class.simpleName}")
+            ?: throw IllegalArgumentException("Declare $modelClass in ${ViewModelModule::class.simpleName}")
         return viewModelProvider.get() as T
     }
 }

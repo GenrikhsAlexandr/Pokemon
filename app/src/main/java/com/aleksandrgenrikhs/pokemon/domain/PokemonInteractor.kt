@@ -6,10 +6,12 @@ class PokemonInteractor
     @Inject constructor(
     private val repository: Repository
 ) {
-    suspend fun getPokemon(offset:Int?, limit:Int?) = repository.getPokemon(offset, limit)
+
+    suspend fun getFirstPage() = repository.getFirstPage()
+
+    suspend fun getNextPage(offset:Int) = repository.getNextPage(offset)
+
+    suspend fun getPreviousPage(offset:Int) = repository.getPreviousPage(offset)
 
     suspend fun getDetailPokemon(pokemonId:Int) = repository.getDetailPokemon(pokemonId)
-
-    suspend fun getCries(url:String) = repository.initPlayer(url)
-    fun playerDestroy() = repository.playerDestroy()
 }

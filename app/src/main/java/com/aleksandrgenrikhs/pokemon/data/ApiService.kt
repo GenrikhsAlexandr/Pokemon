@@ -7,9 +7,12 @@ import retrofit2.http.Query
 interface ApiService {
 
     @GET("pokemon/")
-    suspend fun getPokemon(
-        @Query(QUERY_PARAM_OFFSET) offset: Int?,
-        @Query(QUERY_PARAM_LIMIT) limit: Int?,
+    suspend fun getFirstPage(): PokemonListDto
+
+    @GET("pokemon/")
+    suspend fun getPage(
+        @Query(QUERY_PARAM_OFFSET) offset: Int,
+        @Query(QUERY_PARAM_LIMIT) limit: Int,
     ): PokemonListDto
 
     @GET("pokemon/{id}")

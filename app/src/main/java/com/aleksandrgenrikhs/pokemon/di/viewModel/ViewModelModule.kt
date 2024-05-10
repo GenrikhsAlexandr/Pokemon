@@ -8,7 +8,7 @@ import dagger.multibindings.IntoMap
 import javax.inject.Singleton
 
 @Module
-interface ViewModelsBindingModule {
+interface ViewModelModule {
 
     @Binds
     @IntoMap

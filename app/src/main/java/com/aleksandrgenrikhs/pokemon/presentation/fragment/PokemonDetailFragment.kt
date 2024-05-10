@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -23,6 +24,9 @@ import javax.inject.Inject
 
 class PokemonDetailFragment : Fragment() {
 
+    private var _binding: FragmentPokemonDetailBinding? = null
+    private val binding: FragmentPokemonDetailBinding get() = _binding!!
+
     private val args by navArgs<PokemonDetailFragmentArgs>()
 
     private val navController: NavController by lazy {
@@ -38,9 +42,6 @@ class PokemonDetailFragment : Fragment() {
         )
     }
 
-    private var _binding: FragmentPokemonDetailBinding? = null
-    private val binding: FragmentPokemonDetailBinding get() = _binding!!
-
     override fun onAttach(context: Context) {
         (app.appComponent.inject(this))
         super.onAttach(context)
@@ -51,10 +52,14 @@ class PokemonDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPokemonDetailBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         onClickBack()
         subscribe()
         onClickCriesButton()
-        return binding.root
     }
 
     private fun onClickBack() {
@@ -95,11 +100,15 @@ class PokemonDetailFragment : Fragment() {
                 binding.pokemonCard.isVisible = !isVisible
             }
         }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.toastMessageError.collect { error ->
+                Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        viewModel.destroyPlayer()
     }
 }

@@ -1,16 +1,14 @@
 package com.aleksandrgenrikhs.pokemon.domain
 
-import android.media.MediaPlayer
 import com.aleksandrgenrikhs.pokemon.utils.ResultState
-
 
 interface Repository {
 
-    suspend fun getPokemon(offset: Int?, limit:Int?): ResultState<Page?>
+    suspend fun getFirstPage(): ResultState<Page>
+
+    suspend fun getNextPage(offset: Int): ResultState<Page>
+
+    suspend fun getPreviousPage(offset: Int): ResultState<Page>
 
     suspend fun getDetailPokemon(pokemonId: Int): ResultState<PokemonDetail>
-
-    suspend fun initPlayer(url: String): ResultState<MediaPlayer?>
-
-    fun playerDestroy()
 }
