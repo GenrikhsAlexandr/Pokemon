@@ -53,8 +53,7 @@ class PokemonDetailViewModel
 
     fun cries() {
         val url = ("${pokemonDetail.value?.cries}")
-        mediaPlayer.initPlayer(application, url)
-        mediaPlayer.play()
+        mediaPlayer.initPlayer(application, url)?.start()
     }
 
     override fun onCleared() {

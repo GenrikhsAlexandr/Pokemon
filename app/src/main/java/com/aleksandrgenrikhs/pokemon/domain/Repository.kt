@@ -11,4 +11,6 @@ interface Repository {
     suspend fun getPreviousPage(offset: Int): ResultState<Page>
 
     suspend fun getDetailPokemon(pokemonId: Int): ResultState<PokemonDetail>
+
+    fun isNetWorkConnected():Boolean
 }

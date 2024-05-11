@@ -14,4 +14,6 @@ class PokemonInteractor
     suspend fun getPreviousPage(offset:Int) = repository.getPreviousPage(offset)
 
     suspend fun getDetailPokemon(pokemonId:Int) = repository.getDetailPokemon(pokemonId)
+
+    fun isNetWorkConnected() = repository.isNetWorkConnected()
 }

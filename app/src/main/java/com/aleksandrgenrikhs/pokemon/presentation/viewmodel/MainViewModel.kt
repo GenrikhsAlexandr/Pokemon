@@ -2,6 +2,7 @@ package com.aleksandrgenrikhs.pokemon.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aleksandrgenrikhs.pokemon.R
 import com.aleksandrgenrikhs.pokemon.domain.Page
 import com.aleksandrgenrikhs.pokemon.domain.PokemonInteractor
 import com.aleksandrgenrikhs.pokemon.utils.ResultState
@@ -33,16 +34,19 @@ class MainViewModel
     private val _isButtonGroupVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isButtonGroupVisible: StateFlow<Boolean> = _isButtonGroupVisible
 
-    val toastMessageError: MutableSharedFlow<ResultState.Error> = MutableSharedFlow(
+    val toastMessageError: MutableSharedFlow<Int> = MutableSharedFlow(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
     fun getFirstPage() {
         viewModelScope.launch {
+            if (!interator.isNetWorkConnected()){
+                toastMessageError.tryEmit(R.string.error_message)
+            }
             when (val result = interator.getFirstPage()) {
                 is ResultState.Error -> {
-                    toastMessageError.tryEmit(ResultState.Error(result.message))
+                    toastMessageError.tryEmit(result.message)
                 }
 
                 is ResultState.Success -> {
@@ -54,10 +58,13 @@ class MainViewModel
 
     fun getNextPage() {
         viewModelScope.launch {
+            if (!interator.isNetWorkConnected()){
+                toastMessageError.tryEmit(R.string.error_message)
+            }
             _isProgressBarVisible.value = true
             when (val result = interator.getNextPage(page.value!!.nextOffset)) {
                 is ResultState.Error -> {
-                    toastMessageError.tryEmit(ResultState.Error(result.message))
+                    toastMessageError.tryEmit(result.message)
                 }
 
                 is ResultState.Success -> {
@@ -70,10 +77,13 @@ class MainViewModel
 
     fun getPreviousPage() {
         viewModelScope.launch {
+            if (!interator.isNetWorkConnected()){
+                toastMessageError.tryEmit(R.string.error_message)
+            }
             _isProgressBarVisible.value = true
             when (val result = interator.getPreviousPage(page.value!!.previousOffset)) {
                 is ResultState.Error -> {
-                    toastMessageError.tryEmit(ResultState.Error(result.message))
+                    toastMessageError.tryEmit(result.message)
                 }
 
                 is ResultState.Success -> {

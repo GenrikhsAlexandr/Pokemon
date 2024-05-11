@@ -9,14 +9,14 @@ object PokemonMediaPlayer {
     private var mediaPlayer: MediaPlayer? = null
 
     fun initPlayer(application: Application, url: String): MediaPlayer? {
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(application, Uri.parse(url))
+        return try {
+            if (mediaPlayer == null) {
+                mediaPlayer = MediaPlayer.create(application, Uri.parse(url))
+            }
+            mediaPlayer
+        } catch (e: Exception) {
+            null
         }
-        return mediaPlayer
-    }
-
-    fun play() {
-        mediaPlayer?.start()
     }
 
     fun destroyPlayer() {
