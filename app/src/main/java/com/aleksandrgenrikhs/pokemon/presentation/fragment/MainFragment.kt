@@ -1,6 +1,5 @@
 package com.aleksandrgenrikhs.pokemon.presentation.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,6 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.aleksandrgenrikhs.pokemon.R
-import com.aleksandrgenrikhs.pokemon.app
 import com.aleksandrgenrikhs.pokemon.databinding.FragmentMainBinding
 import com.aleksandrgenrikhs.pokemon.presentation.BottomOffsetDecoration
 import com.aleksandrgenrikhs.pokemon.presentation.PokemonAdapter
@@ -46,11 +44,6 @@ class MainFragment : Fragment() {
                 pokemonId
             )
         )
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (app.appComponent.inject(this))
     }
 
     override fun onCreateView(
