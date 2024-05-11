@@ -9,27 +9,26 @@ import com.aleksandrgenrikhs.pokemon.utils.ResultState
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainViewModel
 @Inject constructor(
-    private val interator: PokemonInteractor,
+    private val interactor: PokemonInteractor,
 ) : ViewModel() {
 
     private val _page: MutableStateFlow<Page?> = MutableStateFlow(null)
     val page: StateFlow<Page?> = _page
 
-    val isReady: StateFlow<Boolean> = page.map {
-        it != null
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val _isReady: MutableStateFlow<Boolean> =  MutableStateFlow(false)
+    val isReady: StateFlow<Boolean> = _isReady
 
     private val _isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isProgressBarVisible: StateFlow<Boolean> = _isProgressBarVisible
+
+    private val _isErrorLayoutVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isErrorLayoutVisible: StateFlow<Boolean> = _isErrorLayoutVisible
 
     private val _isButtonGroupVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isButtonGroupVisible: StateFlow<Boolean> = _isButtonGroupVisible
@@ -41,16 +40,22 @@ class MainViewModel
 
     fun getFirstPage() {
         viewModelScope.launch {
-            if (!interator.isNetWorkConnected()){
-                toastMessageError.tryEmit(R.string.error_message)
-            }
-            when (val result = interator.getFirstPage()) {
+            _isErrorLayoutVisible.value = false
+            when (val result = interactor.getFirstPage()) {
                 is ResultState.Error -> {
-                    toastMessageError.tryEmit(result.message)
+                    _isErrorLayoutVisible.value = true
+                    _isReady.value = true
+                    if (!interactor.isNetWorkConnected()) {
+                        toastMessageError.tryEmit(R.string.error_message)
+                    } else {
+                        toastMessageError.tryEmit(result.message)
+                    }
                 }
 
                 is ResultState.Success -> {
+                    _isErrorLayoutVisible.value = false
                     _page.value = result.data
+                    _isReady.value = true
                 }
             }
         }
@@ -58,13 +63,14 @@ class MainViewModel
 
     fun getNextPage() {
         viewModelScope.launch {
-            if (!interator.isNetWorkConnected()){
-                toastMessageError.tryEmit(R.string.error_message)
-            }
             _isProgressBarVisible.value = true
-            when (val result = interator.getNextPage(page.value!!.nextOffset)) {
+            when (val result = interactor.getNextPage(page.value!!.nextOffset)) {
                 is ResultState.Error -> {
-                    toastMessageError.tryEmit(result.message)
+                    if (!interactor.isNetWorkConnected()) {
+                        toastMessageError.tryEmit(R.string.error_message)
+                    } else {
+                        toastMessageError.tryEmit(result.message)
+                    }
                 }
 
                 is ResultState.Success -> {
@@ -77,13 +83,14 @@ class MainViewModel
 
     fun getPreviousPage() {
         viewModelScope.launch {
-            if (!interator.isNetWorkConnected()){
-                toastMessageError.tryEmit(R.string.error_message)
-            }
             _isProgressBarVisible.value = true
-            when (val result = interator.getPreviousPage(page.value!!.previousOffset)) {
+            when (val result = interactor.getPreviousPage(page.value!!.previousOffset)) {
                 is ResultState.Error -> {
-                    toastMessageError.tryEmit(result.message)
+                    if (!interactor.isNetWorkConnected()) {
+                        toastMessageError.tryEmit(R.string.error_message)
+                    } else {
+                        toastMessageError.tryEmit(result.message)
+                    }
                 }
 
                 is ResultState.Success -> {

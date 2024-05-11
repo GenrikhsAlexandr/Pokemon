@@ -26,9 +26,6 @@ class PokemonRepositoryImpl
 
     override suspend fun getFirstPage(): ResultState<Page> {
         return withContext(Dispatchers.IO) {
-            if (!networkConnected.isNetworkConnected(application)) {
-                return@withContext ResultState.Error(R.string.error_message)
-            } else {
                 try {
                     val response = service.getFirstPage()
                     return@withContext ResultState.Success(mapper.mapToPage(response))
@@ -37,7 +34,6 @@ class PokemonRepositoryImpl
                     return@withContext ResultState.Error(R.string.error_message_response)
                 }
             }
-        }
     }
 
     override suspend fun getNextPage(offset: Int): ResultState<Page> {

@@ -97,12 +97,16 @@ class PokemonDetailFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isProgressBarVisible.collect { isVisible ->
                 binding.progressBar.isVisible = isVisible
-                binding.pokemonCard.isVisible = !isVisible
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isCardViewVisible.collect { isVisible ->
+                binding.pokemonCard.isVisible = isVisible
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.toastMessageError.collect { error ->
-                Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
             }
         }
     }

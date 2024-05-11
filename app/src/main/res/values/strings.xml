@@ -7,5 +7,5 @@
     <string name="base_experience">Опыт: %1$s</string>
     <string name="weight">Вес: %1$s</string>
     <string name="height">Рост: %1$s</string>
-    <string name="cries">Крик</string>
+    <string name="refresh">Обновить</string>
 </resources>

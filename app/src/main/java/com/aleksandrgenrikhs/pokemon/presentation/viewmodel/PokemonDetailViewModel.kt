@@ -3,6 +3,7 @@ package com.aleksandrgenrikhs.pokemon.presentation.viewmodel
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aleksandrgenrikhs.pokemon.R
 import com.aleksandrgenrikhs.pokemon.domain.PokemonDetail
 import com.aleksandrgenrikhs.pokemon.domain.PokemonInteractor
 import com.aleksandrgenrikhs.pokemon.utils.PokemonMediaPlayer
@@ -29,7 +30,10 @@ class PokemonDetailViewModel
     private val _isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isProgressBarVisible: StateFlow<Boolean> = _isProgressBarVisible
 
-    val toastMessageError: MutableSharedFlow<ResultState.Error> = MutableSharedFlow(
+    private val _isCardViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isCardViewVisible: StateFlow<Boolean> = _isCardViewVisible
+
+    val toastMessageError: MutableSharedFlow<Int> = MutableSharedFlow(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
@@ -40,10 +44,16 @@ class PokemonDetailViewModel
             when (val result = interactor.getDetailPokemon(pokemonId)
             ) {
                 is ResultState.Error -> {
-                    toastMessageError.tryEmit(ResultState.Error(result.message))
+                    _isCardViewVisible.value = false
+                    if (!interactor.isNetWorkConnected()) {
+                        toastMessageError.tryEmit(R.string.error_message)
+                    } else {
+                        toastMessageError.tryEmit(result.message)
+                    }
                 }
 
                 is ResultState.Success -> {
+                    _isCardViewVisible.value = true
                     _pokemonDetail.value = result.data
                 }
             }
