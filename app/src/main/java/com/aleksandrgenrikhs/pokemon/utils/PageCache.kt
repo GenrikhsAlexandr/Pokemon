@@ -1,16 +1,18 @@
 package com.aleksandrgenrikhs.pokemon.utils
 
 import com.aleksandrgenrikhs.pokemon.domain.Page
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 object PageCache {
 
     private val cache = HashMap<Int, Page>()
 
-    fun getPage(key: Int): Page? {
-        return cache[key]
-    }
+    private val mutex = Mutex()
 
-    fun putPage(key: Int, value: Page) {
-        cache[key] = value
+    suspend fun getPage(key: Int): Page? = mutex.withLock {cache[key]}
+
+    suspend fun putPage(key: Int, value: Page) {
+       mutex.withLock {cache[key] = value}
     }
 }

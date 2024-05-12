@@ -41,7 +41,7 @@ class MainViewModel
     fun getFirstPage() {
         viewModelScope.launch {
             _isErrorLayoutVisible.value = false
-            when (val result = interactor.getFirstPage(page.value)) {
+            when (val result = interactor.getFirstPage()) {
                 is ResultState.Error -> {
                     _isErrorLayoutVisible.value = true
                     _isReady.value = true

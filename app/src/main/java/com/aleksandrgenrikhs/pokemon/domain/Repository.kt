@@ -4,7 +4,7 @@ import com.aleksandrgenrikhs.pokemon.utils.ResultState
 
 interface Repository {
 
-    suspend fun getFirstPage(page: Page?): ResultState<Page>
+    suspend fun getFirstPage(): ResultState<Page>
 
     suspend fun getNextPage(page: Page): ResultState<Page>
 

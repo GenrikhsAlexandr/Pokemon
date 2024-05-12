@@ -7,7 +7,7 @@ class PokemonInteractor
     private val repository: Repository
 ) {
 
-    suspend fun getFirstPage(page: Page?) = repository.getFirstPage(page)
+    suspend fun getFirstPage() = repository.getFirstPage()
 
     suspend fun getNextPage(page: Page) = repository.getNextPage(page)
 

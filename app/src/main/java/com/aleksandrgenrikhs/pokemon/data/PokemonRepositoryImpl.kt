@@ -26,12 +26,12 @@ class PokemonRepositoryImpl
         const val LIMIT = 20
     }
 
-    override suspend fun getFirstPage(page: Page?): ResultState<Page> {
+    override suspend fun getFirstPage(): ResultState<Page> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = service.getFirstPage()
                 val pageCache = mapper.mapToPage(response)
-                val key = page?.pageNumberNext ?:0
+                val key = 0
                 cache.putPage(key, pageCache)
                 return@withContext ResultState.Success(mapper.mapToPage(response))
             } catch (e: Exception) {
@@ -64,6 +64,7 @@ class PokemonRepositoryImpl
     override suspend fun getPreviousPage(page: Page): ResultState<Page> {
         return withContext(Dispatchers.IO) {
             val key = page.pageNumberPrevious
+            println("")
             val cachedPage = cache.getPage(key)
             if (cachedPage != null) {
                 return@withContext ResultState.Success(cachedPage)
