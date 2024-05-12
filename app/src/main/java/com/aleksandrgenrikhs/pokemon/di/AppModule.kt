@@ -5,6 +5,7 @@ import com.aleksandrgenrikhs.pokemon.di.viewModel.ViewModelModule
 import com.aleksandrgenrikhs.pokemon.domain.NetworkConnectionChecker
 import com.aleksandrgenrikhs.pokemon.domain.Repository
 import com.aleksandrgenrikhs.pokemon.utils.NetworkConnected
+import com.aleksandrgenrikhs.pokemon.utils.PageCache
 import com.aleksandrgenrikhs.pokemon.utils.PokemonMediaPlayer
 import dagger.Binds
 import dagger.Module
@@ -31,5 +32,9 @@ interface AppModule {
         @Provides
         @Singleton
         fun provideMediaPlayer():PokemonMediaPlayer = PokemonMediaPlayer
+
+        @Provides
+        @Singleton
+        fun providePageCache():PageCache = PageCache
     }
 }

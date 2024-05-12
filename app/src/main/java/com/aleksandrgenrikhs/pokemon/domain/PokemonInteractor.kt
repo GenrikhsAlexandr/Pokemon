@@ -7,11 +7,11 @@ class PokemonInteractor
     private val repository: Repository
 ) {
 
-    suspend fun getFirstPage() = repository.getFirstPage()
+    suspend fun getFirstPage(page: Page?) = repository.getFirstPage(page)
 
-    suspend fun getNextPage(offset:Int) = repository.getNextPage(offset)
+    suspend fun getNextPage(page: Page) = repository.getNextPage(page)
 
-    suspend fun getPreviousPage(offset:Int) = repository.getPreviousPage(offset)
+    suspend fun getPreviousPage(page: Page) = repository.getPreviousPage(page)
 
     suspend fun getDetailPokemon(pokemonId:Int) = repository.getDetailPokemon(pokemonId)
 

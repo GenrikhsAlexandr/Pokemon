@@ -21,7 +21,7 @@ class MainViewModel
     private val _page: MutableStateFlow<Page?> = MutableStateFlow(null)
     val page: StateFlow<Page?> = _page
 
-    private val _isReady: MutableStateFlow<Boolean> =  MutableStateFlow(false)
+    private val _isReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isReady: StateFlow<Boolean> = _isReady
 
     private val _isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -41,7 +41,7 @@ class MainViewModel
     fun getFirstPage() {
         viewModelScope.launch {
             _isErrorLayoutVisible.value = false
-            when (val result = interactor.getFirstPage()) {
+            when (val result = interactor.getFirstPage(page.value)) {
                 is ResultState.Error -> {
                     _isErrorLayoutVisible.value = true
                     _isReady.value = true
@@ -64,7 +64,7 @@ class MainViewModel
     fun getNextPage() {
         viewModelScope.launch {
             _isProgressBarVisible.value = true
-            when (val result = interactor.getNextPage(page.value!!.nextOffset)) {
+            when (val result = interactor.getNextPage(page.value!!)) {
                 is ResultState.Error -> {
                     if (!interactor.isNetWorkConnected()) {
                         toastMessageError.tryEmit(R.string.error_message)
@@ -84,7 +84,7 @@ class MainViewModel
     fun getPreviousPage() {
         viewModelScope.launch {
             _isProgressBarVisible.value = true
-            when (val result = interactor.getPreviousPage(page.value!!.previousOffset)) {
+            when (val result = interactor.getPreviousPage(page.value!!)) {
                 is ResultState.Error -> {
                     if (!interactor.isNetWorkConnected()) {
                         toastMessageError.tryEmit(R.string.error_message)

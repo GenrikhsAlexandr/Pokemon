@@ -6,6 +6,7 @@ import com.aleksandrgenrikhs.pokemon.domain.NetworkConnectionChecker
 import com.aleksandrgenrikhs.pokemon.domain.Page
 import com.aleksandrgenrikhs.pokemon.domain.PokemonDetail
 import com.aleksandrgenrikhs.pokemon.domain.Repository
+import com.aleksandrgenrikhs.pokemon.utils.PageCache
 import com.aleksandrgenrikhs.pokemon.utils.ResultState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,29 +18,21 @@ class PokemonRepositoryImpl
     private val networkConnected: NetworkConnectionChecker,
     private val application: Application,
     private val service: ApiService,
+    private val cache: PageCache
 ) : Repository {
 
     companion object {
 
-        private const val LIMIT = 20
+        const val LIMIT = 20
     }
 
-    override suspend fun getFirstPage(): ResultState<Page> {
-        return withContext(Dispatchers.IO) {
-                try {
-                    val response = service.getFirstPage()
-                    return@withContext ResultState.Success(mapper.mapToPage(response))
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    return@withContext ResultState.Error(R.string.error_message_response)
-                }
-            }
-    }
-
-    override suspend fun getNextPage(offset: Int): ResultState<Page> {
+    override suspend fun getFirstPage(page: Page?): ResultState<Page> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = service.getPage(offset = offset, limit = LIMIT)
+                val response = service.getFirstPage()
+                val pageCache = mapper.mapToPage(response)
+                val key = page?.pageNumberNext ?:0
+                cache.putPage(key, pageCache)
                 return@withContext ResultState.Success(mapper.mapToPage(response))
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -48,14 +41,40 @@ class PokemonRepositoryImpl
         }
     }
 
-    override suspend fun getPreviousPage(offset: Int): ResultState<Page> {
+    override suspend fun getNextPage(page: Page): ResultState<Page> {
         return withContext(Dispatchers.IO) {
-            try {
-                val response = service.getPage(offset = offset, limit = LIMIT)
-                return@withContext ResultState.Success(mapper.mapToPage(response))
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return@withContext ResultState.Error(R.string.error_message_response)
+            val key = page.pageNumberNext
+            val cachedPage = cache.getPage(key)
+            if (cachedPage != null) {
+                return@withContext ResultState.Success(cachedPage)
+            } else {
+                try {
+                    val response = service.getPage(offset = page.nextOffset, limit = LIMIT)
+                    val pageCache = mapper.mapToPage(response)
+                    cache.putPage(key, pageCache)
+                    return@withContext ResultState.Success(pageCache)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    return@withContext ResultState.Error(R.string.error_message_response)
+                }
+            }
+        }
+    }
+
+    override suspend fun getPreviousPage(page: Page): ResultState<Page> {
+        return withContext(Dispatchers.IO) {
+            val key = page.pageNumberPrevious
+            val cachedPage = cache.getPage(key)
+            if (cachedPage != null) {
+                return@withContext ResultState.Success(cachedPage)
+            } else {
+                try {
+                    val response = service.getPage(offset = page.previousOffset, limit = LIMIT)
+                    return@withContext ResultState.Success(mapper.mapToPage(response))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    return@withContext ResultState.Error(R.string.error_message_response)
+                }
             }
         }
     }
@@ -71,7 +90,7 @@ class PokemonRepositoryImpl
             }
         }
 
-    override fun isNetWorkConnected():Boolean {
+    override fun isNetWorkConnected(): Boolean {
         return networkConnected.isNetworkConnected(application)
     }
 }
