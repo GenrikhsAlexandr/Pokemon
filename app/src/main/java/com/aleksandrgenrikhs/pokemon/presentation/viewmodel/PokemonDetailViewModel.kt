@@ -18,7 +18,7 @@ import javax.inject.Inject
 class PokemonDetailViewModel
 @Inject constructor(
     pokemonId: Int,
-    private val interactor: PokemonInteractor,
+    interactor: PokemonInteractor,
     private val mediaPlayer: PokemonMediaPlayer,
     private val application: Application
 
